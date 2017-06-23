@@ -54,7 +54,7 @@ def getEveryOtherBitValue(x,lvl):
   return v
 
 
-lvl = 5
+lvl = 3
 
 filters = getFilters(lvl)
 
