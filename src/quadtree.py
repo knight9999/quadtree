@@ -27,13 +27,13 @@ def test1():
     print mc
 
 def test2():
-    COLS = 400
-    ROWS = 400
+    COLS = 500
+    ROWS = 500
     WIDTH = 10
     HEIGHT = 10
     MIN_WIDTH = 10
     MIN_HEIGHT = 10
-    OBJ_NUM = 100
+    OBJ_NUM = 200
     LVL = 3  # 3 for 4x4  4 for 8x8  5 for 16x16
 
     list = np.array([square.Square(
@@ -116,7 +116,7 @@ def test2():
                 break
             mc += 1
 
-    cv2.imwrite('result.png',image)
+    cv2.imwrite('result2.png',image)
 
 start = time.time()
 test2()

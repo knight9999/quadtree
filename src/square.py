@@ -5,13 +5,13 @@ import time
 import numpy as np
 import itertools as it
 
-COLS = 400
-ROWS = 400
+COLS = 500
+ROWS = 500
 WIDTH = 10
 HEIGHT = 10
 MIN_WIDTH = 10
 MIN_HEIGHT = 10
-OBJ_NUM = 100
+OBJ_NUM = 200
 
 class Square(object):
     def __init__(self, x, y, w, h):
@@ -66,7 +66,7 @@ if __name__ == '__main__':
                 s.draw(image,(0,255,0))
                 t.draw(image,(0,255,0))
 
-        cv2.imwrite('result.png',image)
+        cv2.imwrite('result1.png',image)
 
     start = time.time()
     test2()
