@@ -8,7 +8,7 @@ class Morton(object):
         self.lvl = lvl
         self.filters = None
         self.cellValueMax = 2 ** (self.lvl-1)
-        self.filtersLength = int( math.ceil( math.log(self.lvl-1,2) ) )
+        self.filtersLength = 0 if self.lvl == 1 else int( math.ceil( math.log(self.lvl-1,2) ) )
         self.calcBitLength = 2 ** self.filtersLength
         self.filterLength = 2 * self.calcBitLength
         # calc filters
@@ -102,10 +102,10 @@ class Morton(object):
         for fil in filters:
             print format(fil,self.filterFormat())
 
-# class Node(object):
-#     def __init__(self,mo):
-#         self.mo = mo
-#         self.next = None
+
+##############################################################
+# For Debug
+##############################################################
 
 if __name__ == '__main__':
     morton = Morton(4)

@@ -67,7 +67,9 @@ def getPairs(lvl,width,height,list):
 
 
 
+##############################################################
 # For Debug
+##############################################################
 
 if __name__ == '__main__':
     CANVAS_WIDTH = 500
@@ -85,20 +87,26 @@ if __name__ == '__main__':
         w*SQUARE_WIDTH+SQUARE_MIN_WIDTH,
         h*SQUARE_HEIGHT+SQUARE_MIN_HEIGHT) for x,y,w,h in np.random.rand(OBJ_NUM,4) ] )
 
+    # Naive
+
     image = np.zeros( (CANVAS_WIDTH, CANVAS_HEIGHT, 3) , np.uint8)
     for s in list:
         s.draw(image,(0,0,255))
 
     start = time.time()
-    pairs = square.getPairs(LVL,CANVAS_WIDTH,CANVAS_HEIGHT,list)
+    pairs = square.getPairs(CANVAS_WIDTH,CANVAS_HEIGHT,list)
     interval = time.time() - start
     print "time:{0}[sec]".format(interval)
+
+    print "pairs = " + str(len(pairs))
 
     for (s,t) in pairs:
         s.draw(image,(0,255,0))
         t.draw(image,(0,255,0))
 
-    cv2.imwrite('result1.png',image)
+    cv2.imwrite('result0.png',image)
+
+    # Quadtree
 
     image = np.zeros( (CANVAS_WIDTH, CANVAS_HEIGHT, 3) , np.uint8)
     for s in list:
@@ -109,8 +117,10 @@ if __name__ == '__main__':
     interval = time.time() - start
     print "time:{0}[sec]".format(interval)
 
+    print "pairs = " + str(len(pairs))
+
     for (s,t) in pairs:
         s.draw(image,(0,255,0))
         t.draw(image,(0,255,0))
 
-    cv2.imwrite('result2.png',image)
+    cv2.imwrite('result3.png',image)
