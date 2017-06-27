@@ -40,6 +40,18 @@ class Square(object):
     def draw(self,image,color):
         cv2.rectangle(image,(self.left(),self.top()),(self.right(),self.bottom()),color,3)
 
+def getPairs(lvl,width,height,list):
+
+    pairs = []
+    for (s,t) in it.combinations( list , 2 ):
+        if (s.collide(t)):
+            pairs.append( (s,t) )
+
+    return pairs
+
+
+# For Debug
+
 if __name__ == '__main__':
 
     def test2():

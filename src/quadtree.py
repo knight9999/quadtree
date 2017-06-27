@@ -8,100 +8,47 @@ import time
 import morton
 import square
 
+def getPairs(lvl,width,height,list):
 
-def test1():
-    m = morton.Morton(4)
-
-    (x1,y1) = (3.0/8.0,4.0/8.0)
-    (x2,y2) = (2.0/8.0,5.0/8.0)
-    mc1 = m.getMortonCoordinate(x1,y1)
-    mc2 = m.getMortonCoordinate(x2,y2)
-
-    print format(mc1,m.filterFormat())
-    print format(mc2,m.filterFormat())
-
-
-    (lvl,mc) = m.getObjectLvlAndObjectCoordinate(mc1,mc2)
-
-    print lvl
-    print mc
-
-def test2():
-    COLS = 500
-    ROWS = 500
-    WIDTH = 10
-    HEIGHT = 10
-    MIN_WIDTH = 10
-    MIN_HEIGHT = 10
-    OBJ_NUM = 200
-    LVL = 3  # 3 for 4x4  4 for 8x8  5 for 16x16
-
-    list = np.array([square.Square(
-        x*COLS,
-        y*ROWS,
-        w*WIDTH+MIN_WIDTH,
-        h*HEIGHT+MIN_HEIGHT) for x,y,w,h in np.random.rand(OBJ_NUM,4) ] )
-
-    image = np.zeros( (ROWS, COLS, 3) , np.uint8)
-    for s in list:
-        s.draw(image,(0,0,255))
-
-    m = morton.Morton(5)
+    m = morton.Morton(lvl)
 
     indexMax = m.getObjectLinearIndexMax()
     spaceList = [ [] for i in range(indexMax) ]
-    # print "indexMax " + str( indexMax )
-    # print "len = " + str( len( spaceList )  )
-
 
     # spaceListに、Squareを格納していく
     for s in list:
-        x1 = float( s.left() ) / COLS
-        x2 = float( s.right() ) / COLS
-        y1 = float( s.top() ) / ROWS
-        y2 = float( s.bottom() ) / ROWS
-        # print "(" + str(x1) + "," + str(y1) + ")   (" + str(x2) + "," + str(y2) + ")"
-        # print "(" + str( m.getCellValue(x1) ) + "," + \
-        #       str( m.getCellValue(y1) ) + ")   (" + \
-        #       str( m.getCellValue(x2) ) + ", " + \
-        #       str( m.getCellValue(y2) ) + ")"
+        x1 = float( s.left() ) / width
+        x2 = float( s.right() ) / width
+        y1 = float( s.top() ) / height
+        y2 = float( s.bottom() ) / height
         mc1 = m.getMortonCoordinate(x1,y1)
         mc2 = m.getMortonCoordinate(x2,y2)
         i = m.getObjectLinearIndex(mc1,mc2)
-        # print i
         spaceList[i].append( s )
-
-    # for i, v in enumerate( spaceList ):
-    #     print "spc[" + str(i) + "] = " + str( len(v) )
-
 
     # すべてのループさせていく
     maxlvl = m.lvl - 1
     lvl = 0
     mc = 0
     stack = []
-    pair = []
+    pairs = []
 
     while True:
         idx = (4**lvl - 1) / 3 + mc
-#        print "idx:" + str(idx)
 
         mlist = spaceList[idx]
 
+        # mlistの中での衝突をチェック
         for (s,t) in it.combinations( mlist , 2 ):
             if (s.collide(t)):
-                pair.append( (s,t) )
-                s.draw(image,(0,255,0))
-                t.draw(image,(0,255,0))
+                pairs.append( (s,t) )
 
-        # TODO stackとmlistの中での衝突をチェック
+        # stackとmlistの中での衝突をチェック
         for s in mlist:
             for sublist in stack:
                 for t in sublist:
                     if (s.collide(t)):
-                        pair.append( (s,t) )
-                        s.draw(image,(0,255,0))
-                        t.draw(image,(0,255,0))
+                        pairs.append( (s,t) )
 
         if lvl < maxlvl:
             stack.append( mlist )
@@ -116,9 +63,54 @@ def test2():
                 break
             mc += 1
 
-    cv2.imwrite('result2.png',image)
+    return pairs
 
-start = time.time()
-test2()
-interval = time.time() - start
-print "time:{0}[sec]".format(interval)
+
+
+# For Debug
+
+if __name__ == '__main__':
+    CANVAS_WIDTH = 500
+    CANVAS_HEIGHT = 500
+    SQUARE_WIDTH = 10
+    SQUARE_HEIGHT = 10
+    SQUARE_MIN_WIDTH = 10
+    SQUARE_MIN_HEIGHT = 10
+    OBJ_NUM = 200
+    LVL = 3  # 3 for 4x4  4 for 8x8  5 for 16x16
+
+    list = np.array([square.Square(
+        x*CANVAS_WIDTH,
+        y*CANVAS_HEIGHT,
+        w*SQUARE_WIDTH+SQUARE_MIN_WIDTH,
+        h*SQUARE_HEIGHT+SQUARE_MIN_HEIGHT) for x,y,w,h in np.random.rand(OBJ_NUM,4) ] )
+
+    image = np.zeros( (CANVAS_WIDTH, CANVAS_HEIGHT, 3) , np.uint8)
+    for s in list:
+        s.draw(image,(0,0,255))
+
+    start = time.time()
+    pairs = square.getPairs(LVL,CANVAS_WIDTH,CANVAS_HEIGHT,list)
+    interval = time.time() - start
+    print "time:{0}[sec]".format(interval)
+
+    for (s,t) in pairs:
+        s.draw(image,(0,255,0))
+        t.draw(image,(0,255,0))
+
+    cv2.imwrite('result1.png',image)
+
+    image = np.zeros( (CANVAS_WIDTH, CANVAS_HEIGHT, 3) , np.uint8)
+    for s in list:
+        s.draw(image,(0,0,255))
+
+    start = time.time()
+    pairs = getPairs(LVL,CANVAS_WIDTH,CANVAS_HEIGHT,list)
+    interval = time.time() - start
+    print "time:{0}[sec]".format(interval)
+
+    for (s,t) in pairs:
+        s.draw(image,(0,255,0))
+        t.draw(image,(0,255,0))
+
+    cv2.imwrite('result2.png',image)
